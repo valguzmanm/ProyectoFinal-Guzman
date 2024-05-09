@@ -1,0 +1,30 @@
+/* tamaño para el carrusel del inicio */
+.img-carousel{
+    height: 400px;
+    object-fit: cover;
+}
+
+/* Estilo contador del carrito */
+#contador-carrito {
+    transform: translate(70%,-220%);
+    border: 2px solid white; 
+    color: white; 
+    border-radius: 50%; 
+    width: 20px; 
+    height: 20px; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0;
+    
+  }
+
+
+  /* Estilo parte superior texto */
+  .gratis{
+    text-align: center;
+    margin: auto;
+    color: white;
+    background-color: black;
+    padding: 1%;
+  }
