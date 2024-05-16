@@ -12,8 +12,6 @@ document
 document.getElementById("btn-tienda").addEventListener("click", mostrarTienda);
 document.getElementById("logo").addEventListener("click", mostrarTienda);
 
-actualizarGorras()
-
 function mostrarRegistro() {
   document.getElementById("tienda").classList.add("d-none");
   document.getElementById("registro").classList.remove("d-none");
@@ -145,35 +143,80 @@ function validarInicioSesion(usuarioParaValidar) {
 document.addEventListener("DOMContentLoaded", function () {
   const carrito = {};
 
-  document.querySelectorAll(".btn-comprar").forEach((button) => {
-    button.addEventListener("click", function () {
-      const productoId = this.getAttribute("data-id");
-      const productoTitulo =
-        this.closest(".card-body").querySelector(".card-title").textContent;
-      const precioTexto =
-        this.closest(".card-body").querySelector(".card-text").textContent;
-      const precio = parseFloat(precioTexto.replace(/[^0-9.-]+/g, ""));
+  function actualizarGorras() {
+    fetch("http://52.6.29.39:8000/caps/")
+      .then((respuesta) => {
+        respuesta
+          .json()
+          .then((data) => {
+            let htmlCompleto = "";
+            for (const gorra of data) {
+              let formatPrice = parseFloat(gorra.price);
+              let htmlResultado = `
+          <div class="col-lg-4 col-md-6 col-sm-12">
+            <div class="card shadow m-4 bg-body-tertiary" style="width: 18rem;">
+              <img src="${gorra.image}"
+                class="card-img-top" alt="caballo">
+              <div class="card-body">
+                <h5 class="card-title text-center">${gorra.name}</h5>
+                <p class="card-text text-center">${gorra.description} <strong>$ ${formatPrice}</strong> </p>
+                <div class="row m-2">
+                  <button type="button" class="btn btn-dark btn-comprar" data-id=">${gorra.name}">Comprar</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          `;
+              htmlCompleto = htmlCompleto + htmlResultado;
+            }
 
-      if (carrito[productoId]) {
-        carrito[productoId].cantidad++;
-      } else {
-        carrito[productoId] = {
-          titulo: productoTitulo,
-          precio: precio,
-          cantidad: 1,
-        };
+            document.getElementById("container-products").innerHTML =
+              htmlCompleto;
 
-        Swal.fire({
-          position: "top-center",
-          icon: "success",
-          title: "Se agregó correctamente al carrito.",
-          showConfirmButton: false,
-          timer: 1500,
-        });
-      }
-      actualizarCarrito();
-    });
-  });
+            document.querySelectorAll(".btn-comprar").forEach((button) => {
+              button.addEventListener("click", function () {
+                const productoId = this.getAttribute("data-id");
+                const productoTitulo =
+                  this.closest(".card-body").querySelector(
+                    ".card-title"
+                  ).textContent;
+                const precioTexto =
+                  this.closest(".card-body").querySelector(
+                    ".card-text"
+                  ).textContent;
+                const precio = parseFloat(
+                  precioTexto.replace(/[^0-9.-]+/g, "")
+                );
+
+                if (carrito[productoId]) {
+                  carrito[productoId].cantidad++;
+                } else {
+                  carrito[productoId] = {
+                    titulo: productoTitulo,
+                    precio: precio,
+                    cantidad: 1,
+                  };
+
+                  Swal.fire({
+                    position: "top-center",
+                    icon: "success",
+                    title: "Se agregó correctamente al carrito.",
+                    showConfirmButton: false,
+                    timer: 1500,
+                  });
+                }
+                actualizarCarrito();
+              });
+            });
+          })
+          .catch((error) => {
+            console.error(error);
+          });
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }
 
   function actualizarCarrito() {
     const listaCarrito = document.getElementById("lista-carrito");
@@ -197,43 +240,6 @@ document.addEventListener("DOMContentLoaded", function () {
     );
     contadorCarrito.textContent = totalItems;
   }
-});
 
-function actualizarGorras() {
-  fetch('http://52.6.29.39:8000/caps/').then(
-    (respuesta) => {
-      respuesta.json().then((data) => {
-        let htmlCompleto = ''
-        for (const gorra of data) {
-          let formatPrice = parseFloat(gorra.price)
-          let htmlResultado = `
-          <div class="col-lg-4 col-md-6 col-sm-12">
-            <div class="card shadow m-4 bg-body-tertiary" style="width: 18rem;">
-              <img src="${gorra.image}"
-                class="card-img-top" alt="caballo">
-              <div class="card-body">
-                <h5 class="card-title text-center">${gorra.name}</h5>
-                <p class="card-text text-center">${gorra.description} <strong>$ ${formatPrice}</strong> </p>
-                <div class="row m-2">
-                  <button type="button" class="btn btn-dark btn-comprar" data-id="1">Comprar</button>
-                </div>
-              </div>
-            </div>
-          </div>
-          `
-          htmlCompleto = htmlCompleto + htmlResultado
-        }
-        
-        document.getElementById('container-products').innerHTML = htmlCompleto
-      }).catch(
-        (error) => {
-          console.error(error)
-        }
-      )
-    }
-  ).catch(
-    (error) => {
-      console.error(error)
-    }
-  )
-}
+  actualizarGorras();
+});
