@@ -12,6 +12,8 @@ document
 document.getElementById("btn-tienda").addEventListener("click", mostrarTienda);
 document.getElementById("logo").addEventListener("click", mostrarTienda);
 
+actualizarGorras()
+
 function mostrarRegistro() {
   document.getElementById("tienda").classList.add("d-none");
   document.getElementById("registro").classList.remove("d-none");
@@ -196,3 +198,42 @@ document.addEventListener("DOMContentLoaded", function () {
     contadorCarrito.textContent = totalItems;
   }
 });
+
+function actualizarGorras() {
+  fetch('http://52.6.29.39:8000/caps/').then(
+    (respuesta) => {
+      respuesta.json().then((data) => {
+        let htmlCompleto = ''
+        for (const gorra of data) {
+          let formatPrice = parseFloat(gorra.price)
+          let htmlResultado = `
+          <div class="col-lg-4 col-md-6 col-sm-12">
+            <div class="card shadow m-4 bg-body-tertiary" style="width: 18rem;">
+              <img src="${gorra.image}"
+                class="card-img-top" alt="caballo">
+              <div class="card-body">
+                <h5 class="card-title text-center">${gorra.name}</h5>
+                <p class="card-text text-center">${gorra.description} <strong>$ ${formatPrice}</strong> </p>
+                <div class="row m-2">
+                  <button type="button" class="btn btn-dark btn-comprar" data-id="1">Comprar</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          `
+          htmlCompleto = htmlCompleto + htmlResultado
+        }
+        
+        document.getElementById('container-products').innerHTML = htmlCompleto
+      }).catch(
+        (error) => {
+          console.error(error)
+        }
+      )
+    }
+  ).catch(
+    (error) => {
+      console.error(error)
+    }
+  )
+}
