@@ -144,7 +144,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const carrito = {};
 
   function actualizarGorras() {
-    fetch("http://52.6.29.39:8000/caps/")
+    fetch("https://api.bmwbogotaclub.com/caps/")
       .then((respuesta) => {
         respuesta
           .json()
